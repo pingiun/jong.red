@@ -1,47 +1,60 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-
+    <title>jong.red admin</title>
+    <style>
+        #error {
+            color: red;
+        }
+    </style>
 </head>
-<body>
-    This is the admin page
 
+<body>
+    <span>Voeg een nieuwe link toe:</span>
     <input type="text" id="short">
     <input type="url" id="url">
-    <button id="submit">Add</button>
+    <button id="submit">Toevoegen</button>
 
-    <div id="existing">
+    <p id="error"></p>
 
-    </div>
+    <p>Bestaande links:</p>
+    <ul id="existing">
+
+    </ul>
     <script>
-function addElement (tag, content) {
-  // create a new div element
-  const newDiv = document.createElement(tag);
+        function addElement(tag, content) {
+            const newElem = document.createElement(tag);
+            const newContent = document.createTextNode(content);
+            newElem.appendChild(newContent);
 
-  // and give it some content
-  const newContent = document.createTextNode(content);
+            const currentDiv = document.getElementById("existing");
+            document.body.insertBefore(newElem, currentDiv);
+        }
 
-  // add the text node to the newly created div
-  newDiv.appendChild(newContent);
+        window.addEventListener('load', async event => {
+            const keys_list = await fetch("/admin/list");
+            const content = await keys_list.json();
+            for (const key of content.keys) {
+                addElement('li', `${key.name}: ${key.metadata.url}`);
+            }
+        });
 
-  // add the newly created element and its content into the DOM
-  const currentDiv = document.getElementById("existing");
-  document.body.insertBefore(newDiv, currentDiv);
-}
+        document.getElementById("submit").addEventListener('click', async event => {
+            const short = document.getElementById("short");
+            const short_value = short.value;
+            const url = document.getElementById("url");
+            const url_value = url.value;
 
-window.addEventListener('load', async event => {
-  const keys_list = await fetch("/admin/list");
-  const content = await keys_list.json();
-  for (const key of content.keys) {
-    addElement('p', `${key.name}: ${key.metadata.url}`)
-  }
-});
-document.getElementById("submit").addEventListener('click', async event => {
-  const short = document.getElementById("short").value;
-  const url = document.getElementById("url").value;
-
-  await fetch("/admin/put", {method: "PUT", body: JSON.stringify({"key": short, "value": url})});
-});
+            try {
+                await fetch("/admin/put", { method: "PUT", body: JSON.stringify({ "key": short_value, "value": url_value }) });
+                short.value = "";
+                url.value = "";
+            } catch (e) {
+                document.getElementById("error").textContent = "Error: " + e;
+            }
+        });
     </script>
 </body>
+
 </html>
