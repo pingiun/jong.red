@@ -5,9 +5,32 @@
 </head>
 <body>
     This is the admin page
+    <div id="existing">
+
+    </div>
     <script>
-let r = await fetch("/admin/put");
-console.log(r);
+function addElement (tag, content) {
+  // create a new div element
+  const newDiv = document.createElement(tag);
+
+  // and give it some content
+  const newContent = document.createTextNode(content);
+
+  // add the text node to the newly created div
+  newDiv.appendChild(newContent);
+
+  // add the newly created element and its content into the DOM
+  const currentDiv = document.getElementById("existing");
+  document.body.insertBefore(newDiv, currentDiv);
+}
+
+window.addEventListener('load', async (event) => {
+  const keys_list = await fetch("/admin/list");
+  const content = await keys_list.json();
+  for (const key of content.keys) {
+    addElement('p', `${key.name}: ${key.metadata.url}`)
+  }
+});
     </script>
 </body>
 </html>

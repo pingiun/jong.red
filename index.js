@@ -7,6 +7,31 @@ addEventListener("fetch", (event) => {
 });
 
 /**
+ * @param {Request} request
+ * @returns {Promise<Response>}
+ */
+async function handleAdmin(request, userEmail) {
+  const { host, pathname, searchParams } = new URL(request.url);
+
+  if (pathname.startsWith('/admin/list')) {
+    const cursor = searchParams.get('cursor');
+    return new Response(JSON.stringify(await URLS.list({ cursor })))
+  }
+  if (request.method === "PUT" && pathname.startsWith('/admin/put')) {
+    try {
+      const content = await request.json();
+      if (content.key && content.value) {
+        await URLS.put(content.key, JSON.stringify({ url: `${host}/${content.value}`, created_by: userEmail }), { metadata: { url: content.value } });
+        return new Response("OK");
+      }
+      return new Response("Bad request", { status: 403 });
+    } catch {
+      return new Response("Bad JSON", { status: 403 });
+    }
+  }
+}
+
+/**
  * Many more examples available at:
  *   https://developers.cloudflare.com/workers/examples
  * @param {Request} request
@@ -14,6 +39,12 @@ addEventListener("fetch", (event) => {
  */
 async function handleRequest(request) {
   const { host, pathname } = new URL(request.url);
+
+  const userEmail = request.headers.get('cf-access-authenticated-user-email');
+
+  if (pathname.startsWith('/admin/')) {
+    return handleAdmin(request, userEmail);
+  }
 
   console.debug(`Connecting user: ${request.headers.get('cf-access-authenticated-user-email')}`);
 
