@@ -5,6 +5,11 @@
 </head>
 <body>
     This is the admin page
+
+    <input type="text" id="short">
+    <input type="url" id="url">
+    <button id="submit">Add</button>
+
     <div id="existing">
 
     </div>
@@ -24,12 +29,18 @@ function addElement (tag, content) {
   document.body.insertBefore(newDiv, currentDiv);
 }
 
-window.addEventListener('load', async (event) => {
+window.addEventListener('load', async event => {
   const keys_list = await fetch("/admin/list");
   const content = await keys_list.json();
   for (const key of content.keys) {
     addElement('p', `${key.name}: ${key.metadata.url}`)
   }
+});
+document.getElementById("submit").addEventListener('click', async event => {
+  const short = document.getElementById("short").value;
+  const url = document.getElementById("url").value;
+
+  await fetch("/admin/put", {method: "PUT", body: JSON.stringify({"key": short, "value": url})});
 });
     </script>
 </body>

@@ -21,7 +21,7 @@ async function handleAdmin(request, userEmail) {
     try {
       const content = await request.json();
       if (content.key && content.value) {
-        await URLS.put(content.key, JSON.stringify({ url: `${host}/${content.value}`, created_by: userEmail }), { metadata: { url: content.value } });
+        await URLS.put(`${host}/${content.key}`, JSON.stringify({ url: content.value, created_by: userEmail }), { metadata: { url: content.value } });
         return new Response("OK");
       }
       return new Response("Bad request", { status: 403 });
