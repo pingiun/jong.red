@@ -1,0 +1,19 @@
+name = "jong-red"
+type = "javascript"
+
+account_id = "8e9e99d16caef9a8812fe594f4b33127"
+workers_dev = true
+route = ""
+zone_id = ""
+compatibility_date = "2021-12-03"
+
+[env.production]
+# The ID of the domain to deploying to
+zone_id = "40f9784e85967ae381dd757f8f4e794c"
+
+# The route pattern your Workers application will be served at
+route = "jong.red/*"
+
+kv_namespaces = [
+	 { binding = "URLS", id = "a9aa67d98df6473291fb936f7e1e90e3" }
+]
