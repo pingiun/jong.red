@@ -11,9 +11,13 @@
 </head>
 
 <body>
-    <span>Voeg een nieuwe link toe:</span>
-    <input type="text" id="short">
-    <input type="url" id="url">
+    <p>Voeg een nieuwe link toe:</p>
+    <div>
+        <span>jong.red/</span><input type="text" id="short"><button id="random">Genereer random korte url</button>
+    </div>
+    <div>
+        <span>Doorsturen naar:</span><input type="url" id="url">
+    </div>
     <button id="submit">Toevoegen</button>
 
     <p id="error"></p>
@@ -42,6 +46,16 @@
                 addElement('li', `${key.name}: ${key.metadata.url}`);
             }
         });
+
+        document.getElementById("random").addEventListener('click', event => {
+            var result           = '';
+            var characters       = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            var charactersLength = characters.length;
+            for ( var i = 0; i < 6; i++ ) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            document.getElementById("short").value = result;
+        })
 
         document.getElementById("submit").addEventListener('click', async event => {
             const short = document.getElementById("short");

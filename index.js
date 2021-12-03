@@ -21,7 +21,11 @@ async function handleAdmin(request, userEmail) {
     try {
       const content = await request.json();
       if (content.key && content.value) {
-        await URLS.put(`${host}/${content.key}`, JSON.stringify({ url: content.value, created_by: userEmail }), { metadata: { url: content.value } });
+        const key = `${host}/${content.key}`;
+        if (await URLS.get(key)) {
+          return new Response("Key already exists", { status: 409 });
+        }
+        await URLS.put(key, JSON.stringify({ url: content.value, created_by: userEmail }), { metadata: { url: content.value } });
         return new Response("OK");
       }
       return new Response("Bad request", { status: 403 });
