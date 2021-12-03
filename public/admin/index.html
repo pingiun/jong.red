@@ -36,6 +36,9 @@
             const keys_list = await fetch("/admin/list");
             const content = await keys_list.json();
             for (const key of content.keys) {
+                if (key.internal || key.metadata === undefined || !key.metadata.url) {
+                    continue;
+                }
                 addElement('li', `${key.name}: ${key.metadata.url}`);
             }
         });
@@ -50,6 +53,7 @@
                 await fetch("/admin/put", { method: "PUT", body: JSON.stringify({ "key": short_value, "value": url_value }) });
                 short.value = "";
                 url.value = "";
+                addElement('li', `.../${short_value}: ${url_value}`);
             } catch (e) {
                 document.getElementById("error").textContent = "Error: " + e;
             }
